@@ -66,4 +66,17 @@ public class Postagem {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
