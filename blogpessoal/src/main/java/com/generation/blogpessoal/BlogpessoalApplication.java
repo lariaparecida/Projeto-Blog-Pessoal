@@ -11,3 +11,5 @@ public class BlogpessoalApplication {
 	}
 
 }
+/* removi o spring.jpa.properties.jakarta.persistence.sharedCache.mode=ENABLE_SELECTIVE
+do ApplicationProperties*/
