@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +30,9 @@ import jakarta.validation.Valid;
 		
 	@Autowired // INJEÇÃO DE INDEPENDÊNCIA // define quais Classes serão instanciadas e em quais lugares serão Injetadas quando houver necessidade.:
 	private PostagemRepository postagemRepository;
+	
+	@Autowired 
+    private TemaRepository temaRepository;
 
 	@GetMapping
 	public ResponseEntity<List<Postagem>> getAll(){ //SELECT * FROM tb_postagens; // características do método vêem antes igual no inglês
@@ -47,18 +51,44 @@ import jakarta.validation.Valid;
 		return ResponseEntity.ok(postagemRepository.findAllByTituloContainingIgnoreCase(titulo)); //sempre retornará ok, pois irá exibir a lista vazia ou não
 	}
 	
-	@PostMapping 
-	public ResponseEntity<Postagem> post(@Valid  @RequestBody Postagem postagem){ //INSERT INTO tb_postagens (titulo, texto, data) VALUES ("Título", "Texto", CURRENT_TIMESTAMP());.
+	/*@PostMapping 
+	public ResponseEntity<Postagem> post(@Valid  @RequestBody Postagem postagem){ 
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(postagemRepository.save(postagem));
+	}	*/
+	
+	@PostMapping // EDITADO APÓS RELACIONAMENTO
+	public ResponseEntity<Postagem> post(@Valid  @RequestBody Postagem postagem){ //INSERT INTO tb_postagens (titulo, texto, data) VALUES ("Título", "Texto", CURRENT_TIMESTAMP());.
+		
+		if (temaRepository.existsById(postagem.getTema().getId()))
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(postagemRepository.save(postagem));
+
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);
+		
 	}	
 	
-	@PutMapping
-	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) { //UPDATE tb_postagens SET titulo = "titulo", texto = "texto", data = CURRENT_TIMESTAMP() WHERE id = id;
+	/*@PutMapping
+	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) { 
 		return postagemRepository.findById(postagem.getId())
 				.map(resposta -> ResponseEntity.status(HttpStatus.OK)
 						.body(postagemRepository.save(postagem)))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+	}*/
+	
+	@PutMapping // EDITADO APÓS RELACIONAMENTO
+	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) { //UPDATE tb_postagens SET titulo = "titulo", texto = "texto", data = CURRENT_TIMESTAMP() WHERE id = id;
+		if (postagemRepository.existsById(postagem.getId())) {
+			
+			if (temaRepository.existsById(postagem.getTema().getId()))
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(postagemRepository.save(postagem));
+
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);
+
+		}
+		
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)

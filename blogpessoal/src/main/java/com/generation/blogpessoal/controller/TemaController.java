@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.blogpessoal.model.Tema;
+import com.generation.blogpessoal.repository.PostagemRepository;
 import com.generation.blogpessoal.repository.TemaRepository;
 
 import jakarta.validation.Valid;
@@ -30,6 +31,9 @@ public class TemaController {
     
     @Autowired
     private TemaRepository temaRepository;
+    
+    @Autowired
+	private PostagemRepository postagemRepository;
     
     @GetMapping
     public ResponseEntity<List<Tema>> getAll(){
