@@ -38,6 +38,10 @@ public class Postagem { //cria o banco de dados
 	@JsonIgnoreProperties("postagem") // importante pra não exibir várias vezes a mesma informação, colocar o local onde se está
 	private Tema tema; // não precisaria chamar, pois estão no mesmo pacote, já são da família
 	
+	@ManyToOne
+	@JsonIgnoreProperties("postagem")
+	private Usuario usuario;
+	
 	// = FOREIGN KEY (TEMA_ID) REFERENCE TB_TEMA.ID
 	
 	// RELACIONANDO:
@@ -87,5 +91,18 @@ public class Postagem { //cria o banco de dados
 	public void setTema(Tema tema) {
 		this.tema = tema;
 	}
+
+	// USUÁRIO:
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
+	
+	
 	
 }
